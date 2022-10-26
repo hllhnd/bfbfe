@@ -1,0 +1,16 @@
+[package]
+name = "bfbfe-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# BFBFE dependencies
+bfbfe-lang = { path = "../bfbfe-lang" }
+bfbfe-transpile = { path = "../bfbfe-transpile" }
+bfbfe-ir = { path = "../bfbfe-ir" }
+
+clap = { version = "4.0", features = ["derive"] }
+color-eyre = "0.6"
+const_format = "0.2"
+itertools = "0.10"
+owo-colors = "3.5"

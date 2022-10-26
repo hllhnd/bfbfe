@@ -1,0 +1,11 @@
+[package]
+name = "bfbfe-lang"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# BFBFE dependencies
+bfbfe-ir = { path = "../bfbfe-ir" }
+
+thiserror = "1.0"
+itertools = "0.10"
