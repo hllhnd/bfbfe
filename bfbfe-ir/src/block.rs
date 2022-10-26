@@ -6,10 +6,19 @@ use crate::optimization::constants::ConstantsOptimization;
 use crate::optimization::merge::MergeInstructions;
 use crate::optimization::reorder::ReorderingOptimizations;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct IRBlock
 {
     pub content: Vec<IRInstruction>,
+}
+
+impl Clone for IRBlock
+{
+    #[inline]
+    fn clone(&self) -> Self
+    {
+        Self::with_instructions(self.content.clone())
+    }
 }
 
 impl Deref for IRBlock
@@ -20,17 +29,6 @@ impl Deref for IRBlock
     fn deref(&self) -> &Self::Target
     {
         &self.content
-    }
-}
-
-impl Clone for IRBlock
-{
-    #[inline]
-    fn clone(&self) -> Self
-    {
-        Self {
-            content: self.content.clone(),
-        }
     }
 }
 

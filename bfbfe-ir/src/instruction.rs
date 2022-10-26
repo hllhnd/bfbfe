@@ -1,7 +1,7 @@
 use super::block::IRBlock;
 
 /// Represents instructions for the BFBFE IR.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum IRInstruction
 {

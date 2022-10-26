@@ -1,6 +1,7 @@
 use itertools::Itertools;
 
 use crate::token::Token;
+
 pub fn tokenize_whole_program(program: &[char]) -> Vec<Token>
 {
     program

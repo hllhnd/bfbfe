@@ -6,7 +6,7 @@ use bfbfe_ir::block::IRBlock;
 
 use crate::codegen_error::CodegenError;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 #[non_exhaustive]
 pub enum CompilerBackend
 {

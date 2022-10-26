@@ -28,9 +28,11 @@ pub fn instructionize(tokens: &[Token]) -> Result<IRBlock, InstructionizingError
         Ordering::Greater => {
             return Err(InstructionizingError::UnmatchedJumpForward);
         }
+
         Ordering::Less => {
             return Err(InstructionizingError::UnmatchedJumpBackward);
         }
+
         Ordering::Equal => {}
     }
 
@@ -53,31 +55,37 @@ fn _instructionize(tokens: &[Token]) -> Vec<IRInstruction>
                     val: 1
                 });
             }
+
             Token::DecrementPointer => {
                 content.push(IRInstruction::TraverseBy {
                     val: -1
                 });
             }
+
             Token::IncrementValue => {
                 content.push(IRInstruction::MutateValue {
                     pos: 0, val: 1
                 });
             }
+
             Token::DecrementValue => {
                 content.push(IRInstruction::MutateValue {
                     pos: 0, val: -1
                 });
             }
+
             Token::PushByte => {
                 content.push(IRInstruction::OutputBytes {
                     poslst: [0].to_vec()
                 });
             }
+
             Token::ReadByte => {
                 content.push(IRInstruction::ReadBytes {
                     poslst: [0].to_vec()
                 });
             }
+
             Token::JumpForward => {
                 let res = {
                     let mut new_tokens: Vec<Token> = Vec::new();
@@ -88,9 +96,11 @@ fn _instructionize(tokens: &[Token]) -> Vec<IRInstruction>
                             Token::JumpForward => {
                                 depth += 1;
                             }
+
                             Token::JumpBackward => {
                                 depth -= 1;
                             }
+
                             _ => {}
                         }
 
@@ -106,6 +116,7 @@ fn _instructionize(tokens: &[Token]) -> Vec<IRInstruction>
 
                 content.push(res);
             }
+
             Token::JumpBackward => {}
         };
     }

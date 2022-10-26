@@ -15,7 +15,7 @@
 /// | `,`       | `ReadByte`         |
 /// | `[`       | `JumpForward`      |
 /// | `]`       | `JumpBackward`     |
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Token
 {
     IncrementPointer,
