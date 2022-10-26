@@ -62,23 +62,24 @@ impl MergeInstructions for IRBlock
                     continue 'a;
                 }
 
-                // IRInstruction::OutputBytes {
-                //     poslst: lposlst,
-                // } => {
-                //     let mut lposlst = lposlst.clone();
-                //     while let Some(IRInstruction::OutputBytes {
-                //         poslst: rposlst,
-                //     }) = pk.peek()
-                //     {
-                //         lposlst.extend(rposlst);
-                //     }
+                IRInstruction::OutputBytes {
+                    poslst: lposlst,
+                } => {
+                    let mut lposlst = lposlst.clone();
+                    while let Some(IRInstruction::OutputBytes {
+                        poslst: rposlst,
+                    }) = pk.peek()
+                    {
+                        lposlst.extend(rposlst);
+                        pk.next();
+                    }
 
-                //     buffer.push(IRInstruction::OutputBytes {
-                //         poslst: lposlst
-                //     });
+                    buffer.push(IRInstruction::OutputBytes {
+                        poslst: lposlst
+                    });
 
-                //     continue 'a;
-                // }
+                    continue 'a;
+                }
 
                 _ => {}
             }
