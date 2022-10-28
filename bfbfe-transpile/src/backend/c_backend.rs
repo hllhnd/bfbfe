@@ -99,7 +99,7 @@ int main(void)
                 pos,
                 val,
             } => {
-                push!(format!("{} = {};\n", access_value!(*pos), val));
+                push!(format!("{} = {val};\n", access_value!(*pos)));
             }
 
             IRInstruction::OutputBytes {

@@ -143,11 +143,11 @@ fn transpile(arg_quiet: bool, arg_target: &CompilerBackend, arg_output: String, 
         use owo_colors::OwoColorize;
 
         let total_time = tokenizing_time + instructionizing_time + optimizing_time + compilation_time;
-        eprintln!("{} in {} \u{3bc}s", "Build complete".bright_green().bold(), total_time);
-        eprintln!("{}\t\t{} \u{3bc}s", "Tokenizing".underline(), tokenizing_time);
-        eprintln!("{}\t{} \u{3bc}s", "Instructionizing".underline(), instructionizing_time);
-        eprintln!("{}\t\t{} \u{3bc}s", "Optimizing".underline(), optimizing_time);
-        eprintln!("{}\t\t{} \u{3bc}s", "Compiling".underline(), compilation_time);
+        eprintln!("{} in {total_time} \u{3bc}s", "Build complete".bright_green().bold());
+        eprintln!("{}\t\t{tokenizing_time} \u{3bc}s", "Tokenizing".underline());
+        eprintln!("{}\t{instructionizing_time} \u{3bc}s", "Instructionizing".underline());
+        eprintln!("{}\t\t{optimizing_time} \u{3bc}s", "Optimizing".underline());
+        eprintln!("{}\t\t{compilation_time} \u{3bc}s", "Compiling".underline());
     }
 
     output.write_all(program.as_bytes())?;
