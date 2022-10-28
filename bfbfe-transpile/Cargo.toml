@@ -1,7 +1,10 @@
 [package]
 name = "bfbfe-transpile"
 version = "0.1.0"
+authors = ["Reperak"]
 edition = "2021"
+description = "Converts BFBFE IR to a usable format"
+license = "GPL-3.0-or-later"
 
 [dependencies]
 # BFBFE dependencies

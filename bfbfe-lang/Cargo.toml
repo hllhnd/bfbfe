@@ -1,7 +1,10 @@
 [package]
 name = "bfbfe-lang"
 version = "0.1.0"
+authors = ["Reperak"]
 edition = "2021"
+description = "Language module for lexing Brainfuck and converting to BFBFE IR"
+license = "GPL-3.0-or-later"
 
 [dependencies]
 # BFBFE dependencies
