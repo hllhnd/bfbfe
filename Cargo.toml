@@ -1,7 +1,5 @@
 [workspace]
 members = [ 
     "bfbfe-cli",
-    "bfbfe-ir",
-    "bfbfe-lang",
-    "bfbfe-transpile"
+    "bfbfe",
 ]
