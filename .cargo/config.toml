@@ -83,7 +83,6 @@ rustflags = [
     "-Wclippy::option_option",
     "-Wclippy::panic_in_result_fn",
     "-Wclippy::ptr_as_ptr",
-    "-Wclippy::pub_use",
     "-Wclippy::range_minus_one",
     "-Wclippy::range_plus_one",
     "-Wclippy::rc_buffer",

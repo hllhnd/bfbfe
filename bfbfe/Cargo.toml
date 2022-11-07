@@ -7,3 +7,4 @@ description = "All-in-one Brainfuck parser, optimizer, transpiler, and interpret
 license = "GPL-3.0-or-later"
 
 [dependencies]
+thiserror = "1.0"
