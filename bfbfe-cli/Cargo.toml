@@ -1,9 +1,0 @@
-[package]
-name = "bfbfe-cli"
-version = "0.2.0"
-authors = ["Reperak"]
-edition = "2021"
-description = "Command-line app for interacting with BFBFE"
-license = "GPL-3.0-or-later"
-
-[dependencies]
