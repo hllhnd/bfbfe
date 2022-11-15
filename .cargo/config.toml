@@ -40,7 +40,6 @@ rustflags = [
     "-Wclippy::fn_to_numeric_cast_any",
     "-Wclippy::format_push_string",
     "-Wclippy::from_iter_instead_of_collect",
-    "-Wclippy::get_unwrap",
     "-Wclippy::if_not_else",
     "-Wclippy::if_then_some_else_none",
     "-Wclippy::implicit_clone",
