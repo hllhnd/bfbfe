@@ -5,16 +5,16 @@ use core::ops::DerefMut;
 
 pub use self::transform::transform;
 
-/// Contains an array of [`IRElement`].
+/// Contains an array of [`Element`].
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct IRNode
+pub struct Node
 {
-    pub content: Vec<IRElement>,
+    pub content: Vec<Element>,
 }
 
-impl Deref for IRNode
+impl Deref for Node
 {
-    type Target = Vec<IRElement>;
+    type Target = Vec<Element>;
 
     #[inline]
     fn deref(&self) -> &Self::Target
@@ -23,7 +23,7 @@ impl Deref for IRNode
     }
 }
 
-impl DerefMut for IRNode
+impl DerefMut for Node
 {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target
@@ -32,9 +32,9 @@ impl DerefMut for IRNode
     }
 }
 
-/// An element of BFBFE's IR
+/// An element of BFBFE's AST
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum IRElement
+pub enum Element
 {
     /// Move the pointer by `by`.
     ///
@@ -86,6 +86,6 @@ pub enum IRElement
     /// ```
     CondBlck
     {
-        node: IRNode
+        node: Node
     },
 }

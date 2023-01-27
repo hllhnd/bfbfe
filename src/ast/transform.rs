@@ -1,14 +1,14 @@
-use super::IRElement;
-use super::IRNode;
+use super::Element;
+use super::Node;
 use crate::token::Token;
 
-pub fn transform(tks: &[Token]) -> IRNode
+pub fn transform(tks: &[Token]) -> Node
 {
-    let mut node_list: Vec<IRNode> = Vec::new();
+    let mut node_list: Vec<Node> = Vec::new();
 
     // Initial node. This will be the node that contains all the child nodes when
     // parsing is done.
-    node_list.push(IRNode {
+    node_list.push(Node {
         content: Vec::new()
     });
 
@@ -17,44 +17,44 @@ pub fn transform(tks: &[Token]) -> IRNode
 
         match tk {
             Token::IncrementPointer => {
-                lst.push(IRElement::MovPtr {
+                lst.push(Element::MovPtr {
                     by: 1
                 });
             }
 
             Token::DecrementPointer => {
-                lst.push(IRElement::MovPtr {
+                lst.push(Element::MovPtr {
                     by: -1
                 });
             }
 
             Token::IncrementValue => {
-                lst.push(IRElement::MutVal {
+                lst.push(Element::MutVal {
                     at: 0, by: 1
                 });
             }
 
             Token::DecrementValue => {
-                lst.push(IRElement::MutVal {
+                lst.push(Element::MutVal {
                     at: 0, by: -1
                 });
             }
 
             Token::OutputByte => {
-                lst.push(IRElement::Push {
+                lst.push(Element::Push {
                     from: 0
                 });
             }
 
             Token::ReadByte => {
-                lst.push(IRElement::Read {
+                lst.push(Element::Read {
                     to: 0
                 });
             }
 
             Token::JumpForward => {
                 // Begin new node
-                node_list.push(IRNode {
+                node_list.push(Node {
                     content: Vec::new()
                 });
             }
@@ -70,7 +70,7 @@ pub fn transform(tks: &[Token]) -> IRNode
                 let child_node = node_list.pop().unwrap();
                 let parent_node = node_list.last_mut().unwrap();
 
-                parent_node.push(IRElement::CondBlck {
+                parent_node.push(Element::CondBlck {
                     node: child_node
                 });
             }
@@ -88,7 +88,7 @@ pub fn transform(tks: &[Token]) -> IRNode
 #[allow(clippy::enum_glob_use)]
 mod tests
 {
-    use IRElement::*;
+    use Element::*;
     use Token::*;
 
     use super::*;
@@ -111,7 +111,7 @@ mod tests
 
         assert_eq!(
             transform(&TOKENS),
-            IRNode {
+            Node {
                 content: vec![
                     MovPtr {
                         by: 1
@@ -132,7 +132,7 @@ mod tests
                         to: 0
                     },
                     CondBlck {
-                        node: IRNode {
+                        node: Node {
                             content: vec![
                                 MovPtr {
                                     by: 1
