@@ -1,35 +1,10 @@
 mod transform;
 
-use core::ops::Deref;
-use core::ops::DerefMut;
-
-pub use self::transform::transform;
-
 /// Contains an array of [`Element`].
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Node
 {
     pub content: Vec<Element>,
-}
-
-impl Deref for Node
-{
-    type Target = Vec<Element>;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target
-    {
-        &self.content
-    }
-}
-
-impl DerefMut for Node
-{
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target
-    {
-        &mut self.content
-    }
 }
 
 /// An element of BFBFE's AST

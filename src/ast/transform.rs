@@ -17,37 +17,37 @@ pub fn transform(tks: &[Token]) -> Node
 
         match tk {
             Token::IncrementPointer => {
-                lst.push(Element::MovPtr {
+                lst.content.push(Element::MovPtr {
                     by: 1
                 });
             }
 
             Token::DecrementPointer => {
-                lst.push(Element::MovPtr {
+                lst.content.push(Element::MovPtr {
                     by: -1
                 });
             }
 
             Token::IncrementValue => {
-                lst.push(Element::MutVal {
+                lst.content.push(Element::MutVal {
                     at: 0, by: 1
                 });
             }
 
             Token::DecrementValue => {
-                lst.push(Element::MutVal {
+                lst.content.push(Element::MutVal {
                     at: 0, by: -1
                 });
             }
 
             Token::OutputByte => {
-                lst.push(Element::Push {
+                lst.content.push(Element::Push {
                     from: 0
                 });
             }
 
             Token::ReadByte => {
-                lst.push(Element::Read {
+                lst.content.push(Element::Read {
                     to: 0
                 });
             }
@@ -70,7 +70,7 @@ pub fn transform(tks: &[Token]) -> Node
                 let child_node = node_list.pop().unwrap();
                 let parent_node = node_list.last_mut().unwrap();
 
-                parent_node.push(Element::CondBlck {
+                parent_node.content.push(Element::CondBlck {
                     node: child_node
                 });
             }
@@ -81,7 +81,7 @@ pub fn transform(tks: &[Token]) -> Node
     // matching ] after it.
     assert!(node_list.len() == 1);
 
-    node_list.get(0).unwrap().clone()
+    node_list[0].clone()
 }
 
 #[cfg(test)]
