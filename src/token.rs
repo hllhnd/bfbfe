@@ -1,6 +1,3 @@
-#![allow(clippy::std_instead_of_core)] // Apparently thiserror's Error uses Error from std, not core, so it bubbles up
-                                       // this warning. Very annoying.
-
 use thiserror::Error;
 
 /// Represents the eight Brainfuck instructions.

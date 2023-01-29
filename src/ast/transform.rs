@@ -1,8 +1,20 @@
+use thiserror::Error;
+
 use super::Element;
 use super::Node;
 use crate::token::Token;
 
-pub fn transform(tks: &[Token]) -> Node
+#[derive(Debug, Eq, Error, PartialEq)]
+#[non_exhaustive]
+pub enum ASTError
+{
+    #[error("JumpForward at position {0} has no matching JumpBackward")]
+    UnmatchedJumpForward(usize),
+    #[error("JumpBackward at position {0} has no matching JumpForward")]
+    UnmatchedJumpBackward(usize),
+}
+
+pub fn transform(tks: &[Token]) -> Result<Node, ASTError>
 {
     let mut node_list: Vec<Node> = Vec::new();
 
@@ -12,7 +24,9 @@ pub fn transform(tks: &[Token]) -> Node
         content: Vec::new()
     });
 
-    for tk in tks {
+    let mut first_jfw: Option<usize> = None;
+
+    for (i, tk) in tks.iter().enumerate() {
         let lst = node_list.last_mut().unwrap();
 
         match tk {
@@ -53,6 +67,10 @@ pub fn transform(tks: &[Token]) -> Node
             }
 
             Token::JumpForward => {
+                if first_jfw.is_none() {
+                    first_jfw = Some(i);
+                }
+
                 // Begin new node
                 node_list.push(Node {
                     content: Vec::new()
@@ -60,12 +78,11 @@ pub fn transform(tks: &[Token]) -> Node
             }
 
             Token::JumpBackward => {
-                // Store length as local for mutable borrow
-                let len = node_list.len();
-
-                // If this assertion fails, it probably means a ] was passed without a [
+                // If this condition holds true, it probably means a ] was passed without a [
                 // preceding it.
-                assert!(len >= 2);
+                if node_list.len() < 2 {
+                    return Err(ASTError::UnmatchedJumpBackward(i));
+                }
 
                 let child_node = node_list.pop().unwrap();
                 let parent_node = node_list.last_mut().unwrap();
@@ -77,11 +94,13 @@ pub fn transform(tks: &[Token]) -> Node
         }
     }
 
-    // Likewise, if this assertion fails it probably means a [ was passed without a
-    // matching ] after it.
-    assert!(node_list.len() == 1);
+    // Likewise, if this is true it probably means a [ was passed without a matching
+    // ] after it.
+    if node_list.len() != 1 {
+        return Err(ASTError::UnmatchedJumpForward(first_jfw.unwrap()));
+    }
 
-    node_list[0].clone()
+    Ok(node_list[0].clone())
 }
 
 #[cfg(test)]
@@ -111,7 +130,7 @@ mod tests
 
         assert_eq!(
             transform(&TOKENS),
-            Node {
+            Ok(Node {
                 content: vec![
                     MovPtr {
                         by: 1
@@ -144,12 +163,11 @@ mod tests
                         },
                     }
                 ],
-            }
+            })
         );
     }
 
     #[test]
-    #[should_panic]
     fn transform_unmatched_jfw()
     {
         const TOKENS: [Token; 7] = [
@@ -162,11 +180,10 @@ mod tests
             ReadByte,
         ];
 
-        transform(&TOKENS);
+        assert_eq!(transform(&TOKENS), Err(ASTError::UnmatchedJumpForward(3)));
     }
 
     #[test]
-    #[should_panic]
     fn transform_unmatched_jbw()
     {
         const TOKENS: [Token; 7] = [
@@ -179,6 +196,6 @@ mod tests
             ReadByte,
         ];
 
-        transform(&TOKENS);
+        assert_eq!(transform(&TOKENS), Err(ASTError::UnmatchedJumpBackward(3)));
     }
 }
