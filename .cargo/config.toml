@@ -1,6 +1,6 @@
 [target.'cfg(all())']
 rustflags = [
-    "-Dclippy::mod_module_files",
+    "-Dclippy::self_named_module_files",
     "-Dclippy::undocumented_unsafe_blocks",
     "-Wclippy::arithmetic_side_effects",
     "-Wclippy::as_ptr_cast_mut",
