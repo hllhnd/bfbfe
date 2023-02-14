@@ -1,7 +1,7 @@
 use thiserror::Error;
 
+use super::Block;
 use super::Element;
-use super::Node;
 use crate::token::Token;
 
 #[derive(Debug, Eq, Error, PartialEq)]
@@ -14,61 +14,58 @@ pub enum ASTError
     UnmatchedJumpBackward(usize),
 }
 
-pub fn transform(tks: &[Token]) -> Result<Node, ASTError>
+pub fn transform(tks: &[Token]) -> Result<Block, ASTError>
 {
-    let mut node_list: Vec<Node> = Vec::new();
-
-    // Initial node. This will be the node that contains all the child nodes when
-    // parsing is done.
-    node_list.push(Node {
-        content: Vec::new()
-    });
+    // To avoid recursion, this buffer stores all the blocks while their contents
+    // are being worked on. When a block is complete, it is inserted into the
+    // previous block within this Vec.
+    let mut block_buffer = vec![Block::new()];
 
     let mut first_jfw: Option<usize> = None;
 
     for (i, tk) in tks.iter().enumerate() {
-        let lst = node_list.last_mut().unwrap();
+        let current_block = block_buffer.last_mut().unwrap();
 
         match tk {
-            Token::IncrementPointer => lst.content.push(Element::PointerAdd(1)),
-            Token::DecrementPointer => lst.content.push(Element::PointerSub(1)),
-            Token::IncrementValue => lst.content.push(Element::ValueAdd(1)),
-            Token::DecrementValue => lst.content.push(Element::ValueSub(1)),
-            Token::OutputByte => lst.content.push(Element::Push),
-            Token::ReadByte => lst.content.push(Element::Pull),
+            Token::IncrementPointer => current_block.push(Element::PointerAdd(1)),
+            Token::DecrementPointer => current_block.push(Element::PointerSub(1)),
+            Token::IncrementValue => current_block.push(Element::ValueAdd(1)),
+            Token::DecrementValue => current_block.push(Element::ValueSub(1)),
+            Token::OutputByte => current_block.push(Element::Push),
+            Token::ReadByte => current_block.push(Element::Pull),
 
             Token::JumpForward => {
                 if first_jfw.is_none() {
                     first_jfw = Some(i);
                 }
 
-                // Begin new node
-                node_list.push(Node {
-                    content: Vec::new()
-                });
+                // Begin new block
+                block_buffer.push(Block::new());
             }
 
             Token::JumpBackward => {
                 // If this condition holds true, it probably means a ] was passed without a [
                 // preceding it.
-                if node_list.len() < 2 {
+                if block_buffer.len() < 2 {
                     return Err(ASTError::UnmatchedJumpBackward(i));
                 }
-                let child_node = node_list.pop().unwrap();
-                let parent_node = node_list.last_mut().unwrap();
 
-                parent_node.content.push(Element::Conditional(child_node));
+                let current_block = block_buffer.pop().unwrap();
+                block_buffer
+                    .last_mut()
+                    .unwrap()
+                    .push(Element::Conditional(current_block));
             }
         }
     }
 
     // Likewise, if this is true it probably means a [ was passed without a matching
     // ] after it.
-    if node_list.len() != 1 {
+    if block_buffer.len() != 1 {
         return Err(ASTError::UnmatchedJumpForward(first_jfw.unwrap()));
     }
 
-    Ok(node_list[0].clone())
+    Ok(block_buffer.pop().unwrap())
 }
 
 #[cfg(test)]
@@ -98,19 +95,15 @@ mod tests
 
         assert_eq!(
             transform(&TOKENS),
-            Ok(Node {
-                content: vec![
-                    PointerAdd(1),
-                    PointerSub(1),
-                    ValueAdd(1),
-                    ValueSub(1),
-                    Push,
-                    Pull,
-                    Conditional(Node {
-                        content: vec![PointerAdd(1), ValueAdd(1)],
-                    })
-                ],
-            })
+            Ok(vec![
+                PointerAdd(1),
+                PointerSub(1),
+                ValueAdd(1),
+                ValueSub(1),
+                Push,
+                Pull,
+                Conditional(vec![PointerAdd(1), ValueAdd(1)])
+            ]),
         );
     }
 

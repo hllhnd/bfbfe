@@ -1,11 +1,6 @@
 pub mod transform;
 
-/// Contains an array of [`Element`].
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub struct Node
-{
-    pub content: Vec<Element>,
-}
+pub type Block = Vec<Element>;
 
 /// An element of BFBFE's AST
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -35,5 +30,5 @@ pub enum Element
     /// Note that the condition is explicitly not necessarily the original value
     /// being checked; any modifications to the data pointer should result in
     /// that value being checked instead.
-    Conditional(Node),
+    Conditional(Block),
 }

@@ -5,8 +5,8 @@ use std::io::Stdin;
 use std::io::Stdout;
 use std::io::Write;
 
+use crate::ast::Block;
 use crate::ast::Element;
-use crate::ast::Node;
 
 // Would not recommend changing this as the instruction set is meant to use
 // 16-bit integers for indexing.
@@ -18,10 +18,10 @@ const TAPE_SIZE: usize = 30_000;
 /// inspecting the program's tape and pointer upon completion.
 ///
 /// Preparing a basic context for interpreting can be done by constructing it
-/// from its [`Default`], replacing the `node` with your own.
+/// from its [`Default`], replacing `main_block` with your own.
 /// ```
 /// let context = ASTInterpreterContext {
-///     node: my_brainfuck_program,
+///     main_block: my_brainfuck_program,
 ///     ..Default::default()
 /// };
 /// ```
@@ -31,7 +31,7 @@ const TAPE_SIZE: usize = 30_000;
 /// implement [`Read`] and [`Write`], though):
 /// ```
 /// let context = ASTInterpreterContext {
-///     node: my_brainfuck_program,
+///     main_block: my_brainfuck_program,
 ///     input: minion_memes(),
 ///     output: facebook_moms(),
 ///     ..Default::default()
@@ -39,7 +39,7 @@ const TAPE_SIZE: usize = 30_000;
 /// ```
 pub struct ASTInterpreterContext<R: Read, W: Write>
 {
-    pub main_node:    Node,
+    pub main_block:   Block,
     pub tape:         [u8; TAPE_SIZE],
     pub data_pointer: usize,
     pub input:        R,
@@ -52,7 +52,7 @@ impl Default for ASTInterpreterContext<Stdin, Stdout>
     fn default() -> Self
     {
         Self {
-            main_node:    Node::default(),
+            main_block:   Block::default(),
             tape:         [u8::default(); TAPE_SIZE],
             data_pointer: usize::default(),
             input:        stdin(),
@@ -63,12 +63,12 @@ impl Default for ASTInterpreterContext<Stdin, Stdout>
 
 impl<R: Read, W: Write> ASTInterpreterContext<R, W>
 {
-    /// Execute the parent node in the current context.
+    /// Execute the main block in the current context.
     pub fn run(&mut self)
     {
-        fn inner<R: Read, W: Write>(context: &mut ASTInterpreterContext<R, W>, node: &Node)
+        fn inner<R: Read, W: Write>(context: &mut ASTInterpreterContext<R, W>, block: &Block)
         {
-            for element in &node.content {
+            for element in block {
                 match element {
                     Element::PointerAdd(arg) => {
                         context.data_pointer = context.data_pointer.wrapping_add(*arg as usize);
@@ -108,8 +108,8 @@ impl<R: Read, W: Write> ASTInterpreterContext<R, W>
         }
 
         // hee hee hoo borrow checker
-        let main_node_clone = self.main_node.clone();
+        let main_block_clone = self.main_block.clone();
 
-        inner(self, &main_node_clone);
+        inner(self, &main_block_clone);
     }
 }
