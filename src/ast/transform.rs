@@ -30,41 +30,12 @@ pub fn transform(tks: &[Token]) -> Result<Node, ASTError>
         let lst = node_list.last_mut().unwrap();
 
         match tk {
-            Token::IncrementPointer => {
-                lst.content.push(Element::MovPtr {
-                    by: 1
-                });
-            }
-
-            Token::DecrementPointer => {
-                lst.content.push(Element::MovPtr {
-                    by: -1
-                });
-            }
-
-            Token::IncrementValue => {
-                lst.content.push(Element::MutVal {
-                    at: 0, by: 1
-                });
-            }
-
-            Token::DecrementValue => {
-                lst.content.push(Element::MutVal {
-                    at: 0, by: -1
-                });
-            }
-
-            Token::OutputByte => {
-                lst.content.push(Element::Push {
-                    from: 0
-                });
-            }
-
-            Token::ReadByte => {
-                lst.content.push(Element::Read {
-                    to: 0
-                });
-            }
+            Token::IncrementPointer => lst.content.push(Element::PointerAdd(1)),
+            Token::DecrementPointer => lst.content.push(Element::PointerSub(1)),
+            Token::IncrementValue => lst.content.push(Element::ValueAdd(1)),
+            Token::DecrementValue => lst.content.push(Element::ValueSub(1)),
+            Token::OutputByte => lst.content.push(Element::Push),
+            Token::ReadByte => lst.content.push(Element::Pull),
 
             Token::JumpForward => {
                 if first_jfw.is_none() {
@@ -83,13 +54,10 @@ pub fn transform(tks: &[Token]) -> Result<Node, ASTError>
                 if node_list.len() < 2 {
                     return Err(ASTError::UnmatchedJumpBackward(i));
                 }
-
                 let child_node = node_list.pop().unwrap();
                 let parent_node = node_list.last_mut().unwrap();
 
-                parent_node.content.push(Element::CondBlck {
-                    node: child_node
-                });
+                parent_node.content.push(Element::Conditional(child_node));
             }
         }
     }
@@ -132,36 +100,15 @@ mod tests
             transform(&TOKENS),
             Ok(Node {
                 content: vec![
-                    MovPtr {
-                        by: 1
-                    },
-                    MovPtr {
-                        by: -1
-                    },
-                    MutVal {
-                        at: 0, by: 1
-                    },
-                    MutVal {
-                        at: 0, by: -1
-                    },
-                    Push {
-                        from: 0
-                    },
-                    Read {
-                        to: 0
-                    },
-                    CondBlck {
-                        node: Node {
-                            content: vec![
-                                MovPtr {
-                                    by: 1
-                                },
-                                MutVal {
-                                    at: 0, by: 1
-                                }
-                            ],
-                        },
-                    }
+                    PointerAdd(1),
+                    PointerSub(1),
+                    ValueAdd(1),
+                    ValueSub(1),
+                    Push,
+                    Pull,
+                    Conditional(Node {
+                        content: vec![PointerAdd(1), ValueAdd(1)],
+                    })
                 ],
             })
         );
