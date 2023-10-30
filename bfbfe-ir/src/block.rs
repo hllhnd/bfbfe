@@ -68,7 +68,8 @@ impl IRBlock
         }
 
         self.merge_instructions();
-        self.find_set_to_zero();
+        // The find_set_to_zero optimization can cause an extremely rare misoptimization. Feel free to test and uncomment the following line if your program does not get broken.
+        //self.find_set_to_zero();
         self.find_set_to_value();
         self.reorder_instructions();
 
